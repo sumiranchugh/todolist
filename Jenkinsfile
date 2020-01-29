@@ -161,7 +161,7 @@ pipeline {
                 echo '### set env vars and image for deployment ###'
                 sh '''
                     oc set env dc ${APP_NAME} NODE_ENV=${NODE_ENV}
-                    oc set image dc/${APP_NAME} ${APP_NAME}=docker-registry.default.svc:5000/${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
+                    oc set image dc/${APP_NAME} ${APP_NAME}=image-registry.openshift-image-registry.svc:5000/${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
                     oc rollout latest dc/${APP_NAME}
                 '''
                 echo '### Verify OCP Deployment ###'
