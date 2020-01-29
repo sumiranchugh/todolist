@@ -165,7 +165,7 @@ pipeline {
                     oc rollout latest dc/${APP_NAME}
                 '''
                 echo '### Verify OCP Deployment ###'
-                script {
+                openshift.withCluster() {
                   openshift.withProject("${PROJECT_NAMESPACE}") {
                     openshift.selector("dc", "${APP_NAME}").scale("--replicas=1")
                     openshift.selector("dc", "${APP_NAME}").related('pods').untilEach("1".toInteger()) {
