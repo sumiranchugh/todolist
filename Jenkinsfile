@@ -165,13 +165,14 @@ pipeline {
                     oc rollout latest dc/${APP_NAME}
                 '''
                 echo '### Verify OCP Deployment ###'
-                openshiftVerifyDeployment depCfg: env.APP_NAME, 
-                    namespace: env.PROJECT_NAMESPACE, 
-                    replicaCount: '1', 
-                    verbose: 'false', 
-                    verifyReplicaCount: 'true', 
-                    waitTime: '',
-                    waitUnit: 'sec'
+                script {
+                  openshift.withProject("${PROJECT_NAMESPACE}") {
+                    openshift.selector("dc", "${APP_NAME}").scale("--replicas=1")
+                    openshift.selector("dc", "${APP_NAME}").related('pods').untilEach("1".toInteger()) {
+                      return (it.object().status.phase == "Running")
+                    }
+                  }
+                }
             }
         }
     }
