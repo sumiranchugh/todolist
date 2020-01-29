@@ -161,13 +161,13 @@ pipeline {
                 echo '### set env vars and image for deployment ###'
                 sh '''
                     oc set env dc ${APP_NAME} NODE_ENV=${NODE_ENV}
-                    oc set image dc/${APP_NAME} ${APP_NAME}=image-registry.openshift-image-registry.svc:5000/${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
-                    oc rollout latest dc/${APP_NAME}
+                    oc set image dc/${APP_NAME} ${APP_NAME}=image-registry.openshift-image-registry.svc:5000/${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}                    
                 '''
-                echo '### Verify OCP Deployment ###'
+                echo '### Rollout and Verify OCP Deployment ###'
                 script {
                   openshift.withCluster() {
                     openshift.withProject("${PROJECT_NAMESPACE}") {
+                      openshift.selector("dc", "${APP_NAME}").rollout().status("-w")
                       openshift.selector("dc", "${APP_NAME}").scale("--replicas=1")
                       openshift.selector("dc", "${APP_NAME}").related('pods').untilEach("1".toInteger()) {
                         return (it.object().status.phase == "Running")
