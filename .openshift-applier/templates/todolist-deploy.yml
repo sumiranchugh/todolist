@@ -43,7 +43,7 @@ objects:
             name: '${NAME}'
         spec:
           containers:
-            - image: 'docker-registry.default.svc:5000/${NAMESPACE}/${NAME}:${APP_TAG}'
+            - image: 'image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${NAME}:${APP_TAG}'
               imagePullPolicy: Always
               name: '${NAME}'
               env:
