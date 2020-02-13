@@ -136,11 +136,12 @@ pipeline {
                         oc start-build ${APP_NAME} --from-dir=package-contents/ --follow
                     '''
             }
-            post {
-                always {
-                    archive "**"
-                }
-            }
+            // this post step chews up space. uncomment if you want all bake artefacts archived
+            // post {
+                //always {                    
+                    // archive "**"
+                //}
+            //}
         }
 
         stage("node-deploy") {
