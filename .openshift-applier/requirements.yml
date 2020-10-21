@@ -2,7 +2,6 @@
 # to support the operation of CASL provisioning/runs.
 
 # From 'openshift-applier'
-#- src: https://github.com/redhat-cop/openshift-applier
 - src: https://github.com/redhat-cop/openshift-applier
   scm: git
   version: v2.0.10
