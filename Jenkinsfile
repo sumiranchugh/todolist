@@ -18,7 +18,7 @@ pipeline {
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
 
         GIT_SSL_NO_VERIFY = true
-        GIT_CREDENTIALS = credentials("${NAMESPACE_PREFIX}-ci-cd-gitlab-auth")
+        GIT_CREDENTIALS = credentials("${NAMESPACE_PREFIX}-ci-cd-git-auth")
     }
 
     // The options directive is for configuration that applies to the whole job.
