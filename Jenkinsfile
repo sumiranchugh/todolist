@@ -69,7 +69,7 @@ pipeline {
         stage("node-build") {
             agent {
                 node {
-                    label "jenkins-slave-npm"  
+                    label "jenkins-agent-npm"  
                 }
             }
             steps {
