@@ -23,7 +23,7 @@ pipeline {
 
     // The options directive is for configuration that applies to the whole job.
     options {
-        buildDiscarder(logRotator(numToKeepStr:'10'))
+        buildDiscarder(logRotator(numToKeepStr:'5'))
         timeout(time: 15, unit: 'MINUTES')
         ansiColor('xterm')
         timestamps()
@@ -136,11 +136,12 @@ pipeline {
                         oc start-build ${APP_NAME} --from-dir=package-contents/ --follow
                     '''
             }
-            post {
-                always {
-                    archive "**"
-                }
-            }
+            // this post step chews up space. uncomment if you want all bake artefacts archived
+            // post {
+                //always {                    
+                    // archive "**"
+                //}
+            //}
         }
 
         stage("node-deploy") {
@@ -153,25 +154,26 @@ pipeline {
                 expression { GIT_BRANCH ==~ /(.*master|.*develop)/ }
             }
             steps {
-                echo '### tag image for namespace ###'
-                sh  '''
-                    oc project ${PROJECT_NAMESPACE}
-                    oc tag ${PIPELINES_NAMESPACE}/${APP_NAME}:${JENKINS_TAG} ${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
-                    '''
-                echo '### set env vars and image for deployment ###'
-                sh '''
-                    oc set env dc ${APP_NAME} NODE_ENV=${NODE_ENV}
-                    oc set image dc/${APP_NAME} ${APP_NAME}=docker-registry.default.svc:5000/${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}
-                    oc rollout latest dc/${APP_NAME}
-                '''
-                echo '### Verify OCP Deployment ###'
-                openshiftVerifyDeployment depCfg: env.APP_NAME, 
-                    namespace: env.PROJECT_NAMESPACE, 
-                    replicaCount: '1', 
-                    verbose: 'false', 
-                    verifyReplicaCount: 'true', 
-                    waitTime: '',
-                    waitUnit: 'sec'
+                script {
+                  openshift.withCluster() {
+                    openshift.withProject("${PROJECT_NAMESPACE}") {
+                      echo '### tag image for namespace ###'
+                      openshift.tag("${PIPELINES_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}", "${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}")
+                      
+                      echo '### set env vars and image for deployment ###'
+                      openshift.raw("set","env","dc/${APP_NAME}","NODE_ENV=${NODE_ENV}")
+                      openshift.raw("set", "image", "dc/${APP_NAME}", "${APP_NAME}=image-registry.openshift-image-registry.svc:5000/${PROJECT_NAMESPACE}/${APP_NAME}:${JENKINS_TAG}")
+
+                      echo '### Rollout and Verify OCP Deployment ###'
+                      openshift.selector("dc", "${APP_NAME}").rollout().latest()
+                      openshift.selector("dc", "${APP_NAME}").rollout().status("-w")
+                      openshift.selector("dc", "${APP_NAME}").scale("--replicas=1")
+                      openshift.selector("dc", "${APP_NAME}").related('pods').untilEach("1".toInteger()) {
+                        return (it.object().status.phase == "Running")
+                      }
+                    }
+                  }
+                }
             }
         }
     }

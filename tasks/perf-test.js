@@ -21,7 +21,7 @@ const test = {
   nfr : 60
 };
 const dev = {
-  domain : 'http://' + process.env.E2E_TEST_ROUTE,
+  domain : 'https://' + process.env.E2E_TEST_ROUTE,
   dir : './reports/server/perf/',
   route : '/api/todos/',
   nfr : 60

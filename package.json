@@ -104,7 +104,7 @@
     "selenium": "nohup java -Dwebdriver.chrome.driver=\"$(pwd)/node_modules/chromedriver/lib/chromedriver/chromedriver\" -jar $(pwd)/node_modules/selenium-server/lib/runner/selenium-server-standalone-3.11.0.jar -port 8084 0<&- &>/dev/null &",
     "e2e": "export SELENIUM_PORT=443; export SELENIUM_SSL=1; export SELENIUM_HOST=$(oc get routes/$(oc get routes | grep 8084 | cut -d ' ' -f 1) --template='{{.spec.host}}') && export E2E_TEST_ROUTE=$(oc get routes/$(oc get routes | grep 8080 | cut -d ' ' -f 1)  --template='{{.spec.host}}') && echo \"testing app on https://${E2E_TEST_ROUTE} \n with selenium address ${SELENIUM_HOST}\" && vue-cli-service e2e --env jenkins --url https://${E2E_TEST_ROUTE}",
     "e2e:jenkins": "npm-run-all selenium e2e:ci",
-    "e2e:ci": "vue-cli-service e2e --env jenkins --url http://${E2E_TEST_ROUTE}",
+    "e2e:ci": "vue-cli-service e2e --env jenkins --url https://${E2E_TEST_ROUTE}",
     "e2e:ide": "vue-cli-service e2e --url=http://localhost:8080 --env jenkins",
     "lint": "vue-cli-service lint",
     "lint:ci": "vue-cli-service lint --format checkstyle  > eslint-report.xml",
