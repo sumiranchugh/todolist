@@ -18,7 +18,7 @@ pipeline {
         JOB_NAME = "${JOB_NAME}".replace("/", "-")
 
         GIT_SSL_NO_VERIFY = true
-        GIT_CREDENTIALS = credentials("${NAMESPACE_PREFIX}-ci-cd-gitlab-auth")
+        GIT_CREDENTIALS = credentials("${NAMESPACE_PREFIX}-ci-cd-git-auth")
     }
 
     // The options directive is for configuration that applies to the whole job.
@@ -69,7 +69,7 @@ pipeline {
         stage("node-build") {
             agent {
                 node {
-                    label "jenkins-slave-npm"  
+                    label "jenkins-agent-npm"  
                 }
             }
             steps {
@@ -100,11 +100,14 @@ pipeline {
                 }
                 success {
                     echo "Git tagging"
+                    script {
+                      env.ENCODED_PSW=URLEncoder.encode(GIT_CREDENTIALS_PSW, "UTF-8")
+                    }
                     sh'''
                         git config --global user.email "jenkins@jmail.com"
                         git config --global user.name "jenkins-ci"
                         git tag -a ${JENKINS_TAG} -m "JENKINS automated commit"
-                        git push https://${GIT_CREDENTIALS_USR}:${GIT_CREDENTIALS_PSW}@${GITLAB_DOMAIN}/${GITLAB_USERNAME}/${APP_NAME}.git --tags
+                        git push https://${GIT_CREDENTIALS_USR}:${ENCODED_PSW}@${GITLAB_DOMAIN}/${GITLAB_USERNAME}/${APP_NAME}.git --tags
                     '''
                 }
                 failure {
