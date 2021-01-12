@@ -14,7 +14,7 @@
       <div class="image-footer">
         <img
           class="image-footer-logo"
-          src="https://www.redhat.com/cms/managed-files/RHOIL_LogoBadge_RGB_Default.png"
+          src="@/assets/RHOIL_LogoBadge_RGB_Default.png"
           alt="Open Innovation Labs logo"
         />
       </div>
