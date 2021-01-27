@@ -2,7 +2,7 @@
   <div class="home">
     <img
       class="banner-image"
-      src="https://www.redhat.com/cms/managed-files/RHOIL_LogoBadge_RGB_Default.png"
+      src="@/assets/RHOIL_LogoBadge_RGB_Default.png"
       width="330px"
     />
     <h1>Welcome 👋</h1>
