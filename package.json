@@ -120,9 +120,9 @@
     "mongo:start": "docker start mongo-local",
     "mongo:start-ide": "mongod --dbpath /projects/mongo",
     "mongo:stop-ide": "killall mongod",
-    "prepare-nexus": "curl -X POST  -u admin:admin123 -H 'Content-Type: application/json' -H 'Accept: application/json' -d @nexus.json https://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/service/siesta/rest/v1/script && curl -X POST  -u admin:admin123 -H 'Content-Type: text/plain' -H 'Accept: application/json' https://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/service/siesta/rest/v1/script/zip/run",
-    "publish": "curl -vvv -u admin:admin123 --upload-file package-contents.zip http://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/repository/zip/com/redhat/todolist/${JOB_NAME}.${BUILD_NUMBER}/package-contents.zip",
-    "publish:get": "curl -vvv http://admin:admin123@${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/repository/zip/com/redhat/todolist/${BUILD_TAG}/package-contents.zip -o package-contents.zip"
+    "prepare-nexus": "curl -k -X POST  -u admin:admin123 -H 'Content-Type: application/json' -H 'Accept: application/json' -d @nexus.json https://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/service/siesta/rest/v1/script && curl -k -X POST  -u admin:admin123 -H 'Content-Type: text/plain' -H 'Accept: application/json' https://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/service/siesta/rest/v1/script/zip/run",
+    "publish": "curl -k -vvv -u admin:admin123 --upload-file package-contents.zip http://${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/repository/zip/com/redhat/todolist/${JOB_NAME}.${BUILD_NUMBER}/package-contents.zip",
+    "publish:get": "curl -k -vvv http://admin:admin123@${NEXUS_SERVICE_HOST}:${NEXUS_SERVICE_PORT}/repository/zip/com/redhat/todolist/${BUILD_TAG}/package-contents.zip -o package-contents.zip"
   },
   "private": true,
   "nyc": {
