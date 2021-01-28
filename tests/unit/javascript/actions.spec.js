@@ -6,7 +6,7 @@ import config from "../../../src/config";
 
 const todos = [
   { _id: 1, title: "learn testing", completed: true },
-  { _id: 2, title: "learn testing 2", completed: false }
+  { _id: 2, title: "learn testing 2", completed: false },
 ];
 let state;
 
@@ -15,7 +15,7 @@ describe("loadTodos", () => {
     let mock = new MockAdapter(axios);
     mock.onGet(config.todoEndpoint).reply(200, todos);
   });
-  it("should call commit to the mutation function twice", done => {
+  it("should call commit to the mutation function twice", (done) => {
     const commit = sinon.spy();
     actions.loadTodos({ commit }).then(() => {
       // console.log(commit)
@@ -24,7 +24,7 @@ describe("loadTodos", () => {
     });
   });
 
-  it("should first call SET_LOADING", done => {
+  it("should first call SET_LOADING", (done) => {
     const commit = sinon.spy();
     actions.loadTodos({ commit }).then(() => {
       // console.log(commit.firstCall.args[0])
@@ -32,7 +32,7 @@ describe("loadTodos", () => {
       done();
     });
   });
-  it("should second call SET_TODOS", done => {
+  it("should second call SET_TODOS", (done) => {
     const commit = sinon.spy();
     actions.loadTodos({ commit }).then(() => {
       // console.log(commit)
@@ -49,7 +49,7 @@ describe("addTodos", () => {
     // mock.onPost(/http:\/\/localhost:9000\/api\/todos\/.*/, {})
     mock.onPost(config.todoEndpoint).reply(200, todos);
   });
-  it("should call commit to the mutation function once", done => {
+  it("should call commit to the mutation function once", (done) => {
     const commit = sinon.spy();
     state.newTodo = "Learn some mocking";
     actions.addTodo({ commit, state }).then(() => {
@@ -58,7 +58,7 @@ describe("addTodos", () => {
       done();
     });
   });
-  it("should first call ADD_TODO", done => {
+  it("should first call ADD_TODO", (done) => {
     const commit = sinon.spy();
     state.newTodo = "Learn some mocking";
     actions.addTodo({ commit, state }).then(() => {
@@ -107,7 +107,7 @@ describe("updateTodo", () => {
     let mock = new MockAdapter(axios);
     mock.onPut(`${config.todoEndpoint}/1`).reply(200, todos);
   });
-  it("should call commit to the mutation function once", done => {
+  it("should call commit to the mutation function once", (done) => {
     const commit = sinon.spy();
     state.todos = todos;
     actions.updateTodo({ commit, state }, { id: 1 }).then(() => {
@@ -115,7 +115,7 @@ describe("updateTodo", () => {
       done();
     });
   });
-  it("should call MARK_TODO_COMPLETED", done => {
+  it("should call MARK_TODO_COMPLETED", (done) => {
     const commit = sinon.spy();
     state.todos = todos;
     actions.updateTodo({ commit, state }, { id: 1 }).then(() => {
@@ -124,14 +124,14 @@ describe("updateTodo", () => {
       done();
     });
   });
-  it("should call MARK_TODO_IMPORTANT", done => {
+  it("should call MARK_TODO_IMPORTANT", (done) => {
     const commit = sinon.spy();
     state.todos = todos;
     actions
       .updateTodo({ commit, state }, { id: 1, important: true })
       .then(() => {
         // TODO - test goes here!
-
+        expect(commit.firstCall.args[0]).toBe("MARK_TODO_IMPORTANT");
         done();
       });
   });
