@@ -3,25 +3,25 @@ import mutations from "@/store/mutations";
 let state;
 const todo = {
   completed: true,
-  title: "testing sucks"
+  title: "testing sucks",
 };
 const newTodo = "biscuits";
 const doneTodos = [
   {
     completed: true,
-    title: "testing sucks"
+    title: "testing sucks",
   },
   {
     completed: false,
-    title: "easy testing is fun"
-  }
+    title: "easy testing is fun",
+  },
 ];
 const importantTodos = [
   {
     completed: true,
     title: "testing sucks",
-    important: true
-  }
+    important: true,
+  },
 ];
 
 describe("Mutation tests", () => {
@@ -89,11 +89,14 @@ describe("Mutation tests", () => {
 
   it("it should MARK_TODO_IMPORTANT as false", () => {
     state.todos = importantTodos;
-    // TODO - test goes here!
+    mutations.MARK_TODO_IMPORTANT(state, 0);
+    expect(state.todos[0].important).toBe(false);
   });
 
   it("it should MARK_TODO_IMPORTANT as true", () => {
     state.todos = importantTodos;
-    // TODO - test goes here!
+    state.todos[0].important = false;
+    mutations.MARK_TODO_IMPORTANT(state, 0);
+    expect(state.todos[0].important).toBe(true);
   });
 });
