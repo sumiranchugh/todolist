@@ -1,0 +1,74 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    {{- include "todolist.labels" . | nindent 4 }}
+  name: {{ include "todolist.fullname" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 10
+  selector:
+    {{- include "todolist.selectorLabels" . | nindent 4 }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+      labels:
+        {{- include "todolist.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - image: "{{ .Values.image_repository }}/{{ .Values.image_namespace }}/{{ .Values.image_name }}:{{ .Values.image_version }}"
+        imagePullPolicy: Always
+        name: {{ include "todolist.name" . }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+          {{- if .Values.config_map }}
+          - mountPath: "/opt/app-root/src/assets/configuration/"
+            name: "{{ include "todolist.fullname" . }}-config"
+          {{- end }}          
+          {{- if .Values.fathom }}
+          - mountPath: "/opt/app-root/src/assets/analytics/"
+            name: "fathom-config"
+          {{- end }}          
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      {{- if .Values.config_map }}
+      - name: "{{ include "todolist.fullname" . }}-config"
+        configMap:
+          name: "{{ include "todolist.fullname" . }}-environment"
+          defaultMode: 420
+      {{- end }}    
+      {{- if .Values.fathom }}
+      - name: "fathom-config"
+        configMap:
+          name: "fathom-client-config"
+          defaultMode: 420
+      {{- end }}    
+  test: false
+  triggers:
+  - type: ConfigChange

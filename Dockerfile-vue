@@ -1,0 +1,4 @@
+FROM registry.access.redhat.com/ubi8/nodejs-12
+ADD dist .
+RUN npm i http-server
+CMD npx http-server -p 8080

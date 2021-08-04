@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todolist.fullname" . }}
+  labels:
+    {{- include "todolist.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+      name: 8080-tcp
+  selector:
+    {{- include "todolist.selectorLabels" . | nindent 4 }}
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

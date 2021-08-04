@@ -1,0 +1,12 @@
+{{- if .Values.config_map }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:  "{{ include "todolist.fullname" . }}-environment"
+  labels:
+    {{- include "todolist.labels" . | nindent 4 }}
+data:
+  config.json: |-
+    {{ .Values.config_map }}
+{{- end }}

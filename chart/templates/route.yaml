@@ -1,0 +1,36 @@
+{{- if .Values.route }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "todolist.fullname" . }}
+  labels:
+    {{- include "todolist.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: "roundrobin"
+    {{- if .Values.a_b_deploy.svc_name }}
+    # haproxy.router.openshift.io/disable_cookies: "true"
+    {{- end }}
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: {{ include "todolist.fullname" . }}
+    weight: 100
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  wildcardPolicy: None
+  {{- if .Values.a_b_deploy.svc_name }}
+  alternateBackends:
+  - kind: Service
+    name: {{ .Values.a_b_deploy.svc_name }}
+    weight: {{ .Values.a_b_deploy.weight }}
+  {{- end }}
+status:
+  ingress:
+  - conditions:
+    - status: 'True'
+      type: Admitted
+{{ end }}
