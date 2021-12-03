@@ -79,7 +79,7 @@ pipeline {
                 sh 'npm install'
 
                 echo '### Running tests ###'
-                // sh 'npm run test:all:ci'
+                sh 'npm run test:all:ci'
 
                 echo '### Running build ###'
                 sh 'npm run build:ci'
@@ -94,7 +94,8 @@ pipeline {
                 always {
                     archive "**"
                     // ADD TESTS REPORTS HERE
-            
+                    junit 'test-report.xml'
+                    junit 'reports/server/mocha/test-results.xml'
                     // publish html
 
                 }
